@@ -25,7 +25,7 @@ public class Kmers {
 		Scanner scan = new Scanner(sequence);
 		while(scan.hasNextLine()){
 			String line = scan.nextLine();
-			for(int i = 0; i < (line.length() - longueur); i++){
+			for(int i = 0; i <= (line.length() - longueur); i++){
 				this.addKmers(line.substring(i, i + longueur));
 			}
 		}
