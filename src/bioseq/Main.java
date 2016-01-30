@@ -1,11 +1,19 @@
 package bioseq;
 
+/**
+ * @author Delassus Alexandre
+ * @author Merciert Tony
+ * Classe main de bioseq
+ */
 public class Main {
-	
+	/**
+	 * Main permettant d'utiliser la bonne fonction par rapport à l'option ecrite
+	 * @param args
+	 */
 	public static void main (String[] args){
 	    String option = args[0];
 	    Analyser analyser = new Analyser();
-	    
+	    /* On examine l'option et on utilise la bonne fonction */
 	    if(option.equals("print-fasta-sequences")){
 	    	analyser.printFastaSequences(args[1]);
 	    }

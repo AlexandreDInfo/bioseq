@@ -2,40 +2,68 @@ package bioseq;
 
 import java.util.*;
 
+/**
+ * @author Delassus Alexandre
+ * @author Merciert Tony
+ * Analyser regroupe toutes les fonctions principales.
+ */
 public class Analyser {
 	
 	public Analyser() {}
-	
+	/**
+	 * Imprime les sequences contenues dans un fichier fasta en une seule ligne par séquence.
+	 * @param fichier
+	 */
 	public void printFastaSequences(String fichier){
 		String sequence = new Sequence(fichier).getSequence();
+		/* On imprime toutes les sequences */
 		System.out.println(sequence);
 	}
-	
+	/**
+	 * Imprime le nom des sequences et leurs tailles.
+	 * @param fichier
+	 */
 	@SuppressWarnings("resource")
 	public void printFastaStats(String fichier){
 		String sequence = new Sequence(fichier).getSequence();
 		String name = new Sequence(fichier).getName();
+		/* Les scans permettent de lire ligne par ligne donc sequence par sequence */
 		Scanner scanSeq = new Scanner(sequence);
 		Scanner scanName = new Scanner(name);
+		/* Tant qu'il y a des sequences, on imprime le nom et a taille */
 		while(scanName.hasNextLine()){
 			System.out.println(scanName.nextLine() + " " + scanSeq.nextLine().length());
 		}
 	}
-	
+	/**
+	 * Imprime la liste de tous les K-mers de taille longueur
+	 * @param longueur
+	 * 			la longueur d'un k-mers
+	 * @param fichier
+	 */
 	public void listKmers(int longueur, String fichier){
 		ArrayList<String> list = new Kmers(longueur, fichier).getList();
+		/* On imprime tous les K-mers */
 		for(int i = 0; i < list.size(); i++){
 			System.out.println(list.get(i));
 		}
 	}
-	
+	/**
+	 * Imprime la liste de tous les K-mers commum aux 2 sequences choisies.
+	 * @param longueur
+	 * 			la longueur d'un k-mers
+	 * @param fichier1
+	 * @param fichier2
+	 */
 	public void commonKmers(int longueur, String fichier1, String fichier2){
 		Kmers kmers1 = new Kmers(longueur, fichier1);
 		Kmers kmers2 = new Kmers(longueur, fichier2);
+		/* On enleve les doublons pour ne pas faire plusieurs fois la meme chose */
 		kmers1.deleteDoublon();
 		kmers2.deleteDoublon();
 		ArrayList<String> list1 = kmers1.getList();
 		ArrayList<String> list2 = kmers2.getList();
+		/* Pour chaque k-mers de la première liste, on imprime ce k-mers si il est dans la deuxième */
 		for(int i = 0; i < list1.size(); i++){
 			for(int j = 0; j < list2.size(); j++){
 				if(list1.get(i).equals(list2.get(j))){
