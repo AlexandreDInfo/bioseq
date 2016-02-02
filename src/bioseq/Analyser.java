@@ -164,4 +164,18 @@ public class Analyser {
 		return sequenceMutee;
 	}
 	
+	/**
+	 * Question 11 :
+	 * Pour une longueur de kmers de 8 nucléotides, on obtient en ratio pour les séquences mutées :
+	 * 	ebola_mutant_10 : 0,99
+	 *  ebola_mutant_100 : 0,97
+	 *  ebola_mutant_1000 : 0,78
+	 *  ebola_mutant_10000 : 0,38 
+	 *  Lorsque l'on augmente la longueur des kmers, la ratio diminu encore plus rapidement.
+	 *  
+	 *  Celà montre que le fait de modifier des centaines de nucléotides sur une séquence qui en contient beaucoup
+	 *  plus, peut complétement fausser le ratio entre deux mêmes séquences. Celà montre que s'il y a des erreurs 
+	 *  d'analyse pour une même séquence, la méthode des kmers n'est pas la plus précise et peut nous induire 
+	 *  en erreur pour comparer plusieurs séquences. 
+	 */
 }
