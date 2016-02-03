@@ -19,11 +19,19 @@ public class Analyser {
 		/* On imprime toutes les sequences */
 		System.out.println(sequence);
 	}
+	
+	/*
+	 * Réponse à la question 5:
+	 * Les longueurs sont exactes :
+	 * phage-lambda 48 502 nucléotides
+	 * ebola-z 18 958 nucléotides
+	 * ebola-t 18 935 nucléotides
+	 */
+	
 	/**
 	 * Imprime le nom des sequences et leurs tailles.
 	 * @param fichier
 	 */
-	@SuppressWarnings("resource")
 	public void printFastaStats(String fichier){
 		String sequence = new Sequence(fichier).getSequence();
 		String name = new Sequence(fichier).getName();
@@ -34,6 +42,8 @@ public class Analyser {
 		while(scanName.hasNextLine()){
 			System.out.println(scanName.nextLine() + " " + scanSeq.nextLine().length());
 		}
+		scanSeq.close();
+		scanName.close();
 	}
 	/**
 	 * Imprime la liste de tous les K-mers de taille longueur
@@ -49,6 +59,19 @@ public class Analyser {
 		}
 	}
 	/**
+	 * Imprime la liste de tous les K-mers qui suivent le pattern de la graine
+	 * @param graine
+	 * @param fichier
+	 */
+	public void listSpacedKmers(String graine, String fichier){
+		ArrayList<String> list = new Kmers(graine, fichier).getList();
+		/* On imprime tous les K-mers */
+		for(int i = 0; i < list.size(); i++){
+			System.out.println(list.get(i));
+		}
+	}
+	
+	/**
 	 * Imprime la liste de tous les K-mers commum aux 2 sequences choisies.
 	 * @param longueur
 	 * 			la longueur d'un k-mers
@@ -58,6 +81,21 @@ public class Analyser {
 	public void commonKmers(int longueur, String fichier1, String fichier2){
 		Kmers kmers1 = new Kmers(longueur, fichier1);
 		Kmers kmers2 = new Kmers(longueur, fichier2);
+		this.commonKmersAux(kmers1, kmers2);
+	}
+	
+	public void commonSpacedKmers(String graine, String fichier1, String fichier2){
+		Kmers kmers1 = new Kmers(graine, fichier1);
+		Kmers kmers2 = new Kmers(graine, fichier2);
+		this.commonKmersAux(kmers1, kmers2);
+	}
+	/**
+	 * Imprime la liste de tous les K-mers commum aux 2 Kmers choisis.
+	 * @param kmers1
+	 * @param kmers2
+	 */
+	public void commonKmersAux(Kmers kmers1, Kmers kmers2){
+		
 		/* On enleve les doublons pour ne pas faire plusieurs fois la meme chose */
 		kmers1.deleteDoublon();
 		kmers2.deleteDoublon();
@@ -73,6 +111,17 @@ public class Analyser {
 		}
 	}
 	
+	public double ratioCommonKmers(int longueur, String fichier1, String fichier2){
+		Kmers kmers1 = new Kmers(longueur, fichier1);
+		Kmers kmers2 = new Kmers(longueur, fichier2);
+		return ratioCommonKmersAux(kmers1, kmers2);
+	}
+	
+	public double ratioCommonSpacedKmers(String graine, String fichier1, String fichier2){
+		Kmers kmers1 = new Kmers(graine, fichier1);
+		Kmers kmers2 = new Kmers(graine, fichier2);
+		return ratioCommonKmersAux(kmers1, kmers2);
+	}
 	/**
 	 * @param longueur 
 	 * 			la longueur d'un kmer
@@ -80,9 +129,7 @@ public class Analyser {
 	 * @param fichier2
 	 * @return la proportion de kmers du premier fichier qui sont présent dans le deuxième
 	 */
-	public double ratio_common_kmers (int longueur, String fichier1, String fichier2) {
-		Kmers kmers1 = new Kmers(longueur, fichier1);
-		Kmers kmers2 = new Kmers(longueur, fichier2);
+	public double ratioCommonKmersAux(Kmers kmers1, Kmers kmers2) {
 		double nombreTotalKmers1 = kmers1.getList().size();
 		// On initialise le compteur pour connaitre le nombre de kmers du fichier 1 qui est présent dans le fichier 2
 		double nombreDeKmers1Dans2 = 0;
@@ -105,7 +152,7 @@ public class Analyser {
 		return nombreDeKmers1Dans2 / nombreTotalKmers1;
 	}
 	
-	/**
+	/*
 	 * Réponse à la question 9 : 
 	 *  Lorsque que l'on compare les 4-mers d'ebola-z et d'ebola-t on obtient un ratio de 1. Cela montre que
 	 *  la séquence de ces deux virus est très proche, ainsi ils font parti de la même catégorie de virus. 
@@ -159,23 +206,32 @@ public class Analyser {
 		for (int i = 0 ; i < mutation ; i++) {
 			int endroitRandomSequence = rand.nextInt(sequence.length());
 			String nucleotideMute = nucleotideAleatoire(Character.toString(sequenceMutee.charAt(endroitRandomSequence)));
-			sequenceMutee.replace(endroitRandomSequence, endroitRandomSequence,nucleotideMute);
+			sequenceMutee.replace(endroitRandomSequence, endroitRandomSequence+1,nucleotideMute);
 		}
 		return sequenceMutee;
 	}
 	
-	/**
+	/*
 	 * Question 11 :
 	 * Pour une longueur de kmers de 8 nucléotides, on obtient en ratio pour les séquences mutées :
-	 * 	ebola_mutant_10 : 0,99
+	 * 	ebola_mutant_10 : 0,997
 	 *  ebola_mutant_100 : 0,97
-	 *  ebola_mutant_1000 : 0,78
-	 *  ebola_mutant_10000 : 0,38 
+	 *  ebola_mutant_1000 : 0,77
+	 *  ebola_mutant_10000 : 0,35 
 	 *  Lorsque l'on augmente la longueur des kmers, la ratio diminu encore plus rapidement.
 	 *  
 	 *  Celà montre que le fait de modifier des centaines de nucléotides sur une séquence qui en contient beaucoup
 	 *  plus, peut complétement fausser le ratio entre deux mêmes séquences. Celà montre que s'il y a des erreurs 
 	 *  d'analyse pour une même séquence, la méthode des kmers n'est pas la plus précise et peut nous induire 
 	 *  en erreur pour comparer plusieurs séquences. 
+	 */
+	
+	/*
+	 * Question 14 :
+	 *  Lorsque l'on compare les séquences d'ebola mutées avec la séquence ebola-z en utilisant la graine "########" on obtient les même ratio qu'en utilisant 
+	 *  un kmer de longueur 8 ce qui est normal
+	 *  Mais en utilisant des graines comme par exemple "#-#--###-###" qui sont aussi de poids 8, on observe que le ratio reste plus ou moins identique.
+	 *  L'utilisation des graines à un intérêt surtout pour les séquences qui ont subi des délétions ainsi que des ajouts de nucléotides. En effet, le fait
+	 *  "d'oublier" un nucléotide dans le motif de la graine permet de ne pas prendre en compte une potentielle addition ou suppression. 
 	 */
 }

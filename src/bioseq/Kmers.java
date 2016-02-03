@@ -11,7 +11,7 @@ public class Kmers {
 
 	private ArrayList<String> list;
 	/**
-	 * Constructeur de K-mers
+	 * Constructeur de K-mers 
 	 * @param longueur
 	 * 			la longueur d'un k-mers
 	 * @param fichier
@@ -19,6 +19,15 @@ public class Kmers {
 	public Kmers(int longueur, String fichier){
 		this.list = new ArrayList<String>();
 		this.generateKmers(longueur, fichier);
+	}
+	/**
+	 * Constructeur de K-mers espacés
+	 * @param graine
+	 * @param fichier
+	 */
+	public Kmers(String graine, String fichier){
+		this.list = new ArrayList<String>();
+		this.generateSpacedKmers(graine, fichier);
 	}
 	/**
 	 * Getter de list
@@ -40,7 +49,6 @@ public class Kmers {
 	 * 			la longueur d'un K-mers
 	 * @param fichier
 	 */
-	@SuppressWarnings("resource")
 	public void generateKmers(int longueur, String fichier){
 		String sequence = new Sequence(fichier).getSequence();
 		Scanner scan = new Scanner(sequence);
@@ -52,6 +60,7 @@ public class Kmers {
 				this.addKmers(line.substring(i, i + longueur));
 			}
 		}
+		scan.close();
 	}
 	/**
 	 * Enleve les doublons de la liste de k-mers
@@ -61,6 +70,28 @@ public class Kmers {
         Set<String> set = new HashSet<String>();
         set.addAll(this.list);
         this.list = new ArrayList<String>(set) ;
+	}
+	/**
+	 * Génère la liste de kmers suivant le pattern de la graine.
+	 * @param graine
+	 * @param fichier
+	 */
+	public void generateSpacedKmers(String graine, String fichier){
+		String sequence = new Sequence(fichier).getSequence();
+		Scanner scan = new Scanner(sequence);
+		while(scan.hasNextLine()){
+			String line = scan.nextLine();
+			for(int i = 0; i <= (line.length() - graine.length()); i++){
+				String kmers = "";
+				for(int j = 0; j < graine.length(); j++){
+					if(graine.charAt(j) == '#'){
+						kmers = kmers + line.charAt(i+j);
+					}
+				}
+				this.addKmers(kmers);
+			}
+		}
+		scan.close();
 	}
 	
 }
